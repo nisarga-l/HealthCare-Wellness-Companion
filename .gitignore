@@ -1,0 +1,49 @@
+.env
+server/.env
+client/.env
+mobile/.env
+node_modules/
+server/node_modules/
+client/node_modules/
+mobile/.dart_tool/
+mobile/build/
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+# React generated files
+client/dist/
+client/.vite/
+
+# Flutter generated files
+mobile/build/
+mobile/.dart_tool/
+
+# Environment and secrets
+.env
+server/.env
+client/.env
+mobile/.env
+
+# Dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+*.zip
+mobile/flutter_error.txt
+mobile/healthmate_debug.txt
+
+# Unwanted backup and debug files
+*.zip
+mobile/flutter_error.txt
+mobile/healthmate_debug.txt

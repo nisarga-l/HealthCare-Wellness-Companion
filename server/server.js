@@ -1,0 +1,60 @@
+
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
+const wellnessRoutes = require("./routes/wellnessRoutes");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Root endpoint
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "HealthMate API is running!",
+        status: "success",
+        environment: process.env.NODE_ENV || "development"
+    });
+});
+
+// Health check
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        status: "healthy",
+        message: "Server is running"
+    });
+});
+
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/wellness", wellnessRoutes);
+
+// Handle unknown routes
+app.use((req, res) => {
+    res.status(404).json({
+        message: "Route not found"
+    });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+    try {
+        await connectDB();
+
+        app.listen(PORT, "0.0.0.0", () => {
+            console.log(`HealthMate server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Failed to start server:", error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
