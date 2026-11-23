@@ -1,9 +1,9 @@
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://172.17.29.7:5000/api';
+  static const String baseUrl =
+      'https://healthcare-wellness-companion-1.onrender.com/api';
 
   static Map<String, String> get headers => {
     'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ class ApiService {
     throw Exception(
       result['data'] is Map
           ? result['data']['message'] ??
-          'Unable to load wellness records'
+              'Unable to load wellness records'
           : 'Unable to load wellness records',
     );
   }
@@ -205,6 +205,6 @@ class ApiService {
       headers: authHeaders(token),
     );
 
-    return _response(response);
+    return _response(response);E
   }
 }
