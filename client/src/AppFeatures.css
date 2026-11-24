@@ -1013,3 +1013,81 @@
         padding: 23px 17px;
     }
 }
+
+/* =========================================
+   HEALTHMATE - MEDICATION INPUT VISIBILITY FIX
+========================================= */
+
+.hm-main input,
+.hm-main select,
+.hm-main textarea {
+    color: #172033 !important;
+    -webkit-text-fill-color: #172033 !important;
+    caret-color: #0f766e !important;
+    color-scheme: light !important;
+}
+
+/* Light input fields */
+.hm-main input:not([type="checkbox"]):not([type="radio"]),
+.hm-main select,
+.hm-main textarea {
+    background-color: #f8fafc !important;
+}
+
+/* Placeholder visibility */
+.hm-main input::placeholder,
+.hm-main textarea::placeholder {
+    color: #64748b !important;
+    -webkit-text-fill-color: #64748b !important;
+    opacity: 1 !important;
+}
+
+/* Dropdown options */
+.hm-main select option {
+    background-color: #ffffff !important;
+    color: #172033 !important;
+}
+
+/* Focus state */
+.hm-main input:focus,
+.hm-main select:focus,
+.hm-main textarea:focus {
+    color: #172033 !important;
+    -webkit-text-fill-color: #172033 !important;
+    border-color: #32bd91 !important;
+    outline: none;
+}
+
+
+/* FINAL FIX — MEDICATION FORM TYPED TEXT */
+
+.hm-main input:not([type="checkbox"]):not([type="radio"]),
+.hm-main select,
+.hm-main textarea {
+    color: #172033 !important;
+    -webkit-text-fill-color: #172033 !important;
+    caret-color: #0f766e !important;
+    opacity: 1 !important;
+}
+
+/* Keep placeholders readable */
+.hm-main input::placeholder,
+.hm-main textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 1 !important;
+}
+
+/* Medication dropdown text */
+.hm-main select option {
+    color: #172033 !important;
+    background: #ffffff !important;
+}
+
+/* Ensure entered text stays visible while typing */
+.hm-main input:focus,
+.hm-main textarea:focus,
+.hm-main select:focus {
+    color: #172033 !important;
+    -webkit-text-fill-color: #172033 !important;
+}

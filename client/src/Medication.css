@@ -653,3 +653,32 @@
         flex-wrap: wrap;
     }
 }
+/* Fix medication form text visibility */
+input,
+select,
+textarea {
+    color: #1f2937 !important;
+    background-color: #f8fafc !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+}
+
+select option {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+}
+
+input[type="date"],
+input[type="time"] {
+    color: #1f2937 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    color: #111827 !important;
+}
