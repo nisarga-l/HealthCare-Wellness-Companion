@@ -1,11 +1,12 @@
-
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
+
 const authRoutes = require("./routes/authRoutes");
 const wellnessRoutes = require("./routes/wellnessRoutes");
+const medicationRoutes = require("./routes/medicationRoutes");
 
 const app = express();
 
@@ -33,11 +34,22 @@ app.get("/health", (req, res) => {
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/wellness", wellnessRoutes);
+app.use("/api/medications", medicationRoutes);
 
 // Handle unknown routes
 app.use((req, res) => {
     res.status(404).json({
         message: "Route not found"
+    });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error("Server Error:", err.stack);
+
+    res.status(500).json({
+        success: false,
+        message: "Internal server error"
     });
 });
 
@@ -50,6 +62,7 @@ const startServer = async () => {
 
         app.listen(PORT, "0.0.0.0", () => {
             console.log(`HealthMate server running on port ${PORT}`);
+            console.log("Medication API: /api/medications");
         });
     } catch (error) {
         console.error("Failed to start server:", error.message);

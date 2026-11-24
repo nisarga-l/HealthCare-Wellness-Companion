@@ -1,4 +1,3 @@
-
 import BMI from "./BMI";
 import { useEffect, useMemo, useState } from "react";
 import Login from "./Login";
@@ -6,11 +5,14 @@ import Register from "./Register";
 import API from "./api";
 import "./App.css";
 import "./AppFeatures.css";
+import SmartInsights from "./SmartInsights";
+import Medication from "./Medication";
 
 const pages = [
     ["dashboard", "Dashboard", "▦"],
     ["progress", "Progress", "↗"],
     ["wellness", "My Wellness", "♡"],
+    ["medication", "Medication", "💊"],
     ["notifications", "Notifications", "♧"],
     ["profile", "Profile", "◉"],
 ];
@@ -159,6 +161,36 @@ function App() {
             .reduce((s, r) => s + Number(r.value || 0), 0),
 
     }), [todayRecords]);
+
+    // ==========================================
+    // WELLNESS SCORE CALCULATION (0-100)
+    // ==========================================
+
+    const wellnessScore = useMemo(() => {
+        const hydrationScore = Math.min(
+            dailyTotals.water / 2.5,
+            1
+        ) * 30;
+
+        const sleepScore = Math.min(
+            dailyTotals.sleep / 8,
+            1
+        ) * 35;
+
+        const exerciseScore = Math.min(
+            dailyTotals.exercise / 30,
+            1
+        ) * 35;
+
+        return {
+            total: Math.round(
+                hydrationScore + sleepScore + exerciseScore
+            ),
+            hydration: Math.round(hydrationScore),
+            sleep: Math.round(sleepScore),
+            exercise: Math.round(exerciseScore)
+        };
+    }, [dailyTotals]);
 
     // Last seven days
     const lastSevenDays = useMemo(() => {
@@ -404,7 +436,149 @@ function App() {
         );
     };
 
-    // Daily goal progress component
+    // ==========================================
+    // WELLNESS SCORE COMPONENT
+    // ==========================================
+
+    const WellnessScore = () => {
+        const score = wellnessScore.total;
+
+        const status =
+            score >= 85
+                ? "Excellent"
+                : score >= 65
+                    ? "Good"
+                    : score >= 40
+                        ? "Getting Started"
+                        : "Needs Attention";
+
+        const statusColor =
+            score >= 85
+                ? "#72e6bd"
+                : score >= 65
+                    ? "#64c9ed"
+                    : score >= 40
+                        ? "#f5b56d"
+                        : "#fb7185";
+
+        return (
+            <section className="hm-wellness-score">
+                <div className="hm-score-header">
+                    <div>
+                        <p className="hm-eyebrow">
+                            HEALTH INTELLIGENCE
+                        </p>
+
+                        <h2>Your Wellness Score</h2>
+
+                        <p>
+                            Based on your daily hydration, sleep
+                            and physical activity.
+                        </p>
+                    </div>
+
+                    <span className="hm-score-badge">
+                        ✦ Daily Analysis
+                    </span>
+                </div>
+
+                <div className="hm-score-content">
+                    <div
+                        className="hm-score-ring"
+                        style={{
+                            "--score": `${score}%`,
+                            "--score-color": statusColor
+                        }}
+                    >
+                        <div className="hm-score-inner">
+                            <strong>{score}</strong>
+                            <span>/100</span>
+                            <small>WELLNESS</small>
+                        </div>
+                    </div>
+
+                    <div className="hm-score-details">
+                        <h3 style={{ color: statusColor }}>
+                            {status}
+                        </h3>
+
+                        <p>
+                            {score >= 85
+                                ? "Amazing! You're maintaining a strong balance across your daily wellness habits."
+                                : score >= 65
+                                    ? "You're doing well! A few improvements in your daily habits can boost your score."
+                                    : score >= 40
+                                        ? "You're making progress. Keep consistently tracking your wellness activities."
+                                        : "Start logging your daily habits to build your wellness score."}
+                        </p>
+
+                        <div className="hm-score-breakdown">
+                            <div className="hm-score-item">
+                                <span>💧 Hydration</span>
+
+                                <div className="hm-score-bar">
+                                    <div
+                                        style={{
+                                            width: `${(wellnessScore.hydration / 30) * 100}%`,
+                                            background: "#64c9ed"
+                                        }}
+                                    />
+                                </div>
+
+                                <strong>
+                                    {wellnessScore.hydration}/30
+                                </strong>
+                            </div>
+
+                            <div className="hm-score-item">
+                                <span>😴 Sleep</span>
+
+                                <div className="hm-score-bar">
+                                    <div
+                                        style={{
+                                            width: `${(wellnessScore.sleep / 35) * 100}%`,
+                                            background: "#a78bfa"
+                                        }}
+                                    />
+                                </div>
+
+                                <strong>
+                                    {wellnessScore.sleep}/35
+                                </strong>
+                            </div>
+
+                            <div className="hm-score-item">
+                                <span>🏃 Activity</span>
+
+                                <div className="hm-score-bar">
+                                    <div
+                                        style={{
+                                            width: `${(wellnessScore.exercise / 35) * 100}%`,
+                                            background: "#72e6bd"
+                                        }}
+                                    />
+                                </div>
+
+                                <strong>
+                                    {wellnessScore.exercise}/35
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="hm-score-footer">
+                    <span>📊</span>
+
+                    <p>
+                        Score is calculated from today's recorded activities
+                        and your daily wellness goals.
+                    </p>
+                </div>
+            </section>
+        );
+    };
+        // Daily goal progress component
     const DailyGoals = () => {
         const completedCount = dailyGoals.filter(
             goal => dailyTotals[goal.category] >= goal.target
@@ -432,6 +606,7 @@ function App() {
                 }}>
                     {dailyGoals.map(goal => {
                         const current = dailyTotals[goal.category];
+
                         const percentage = Math.min(
                             100,
                             Math.round((current / goal.target) * 100)
@@ -639,8 +814,15 @@ function App() {
                             </span>
                         </div>
 
+                        {/* NEW WELLNESS SCORE */}
+                        <WellnessScore />
+                        
+                        {/* SMART HEALTH INSIGHTS */}
+                        <SmartInsights dailyTotals={dailyTotals} />
+
                         {/* ALL-TIME SUMMARY */}
                         <section className="hm-summary-grid">
+                            
                             <div className="hm-summary-card water">
                                 <span>💧</span>
                                 <p>Water intake (total)</p>
@@ -791,8 +973,7 @@ function App() {
                         </section>
                     </>
                 )}
-
-                {/* PROGRESS */}
+                                {/* PROGRESS */}
                 {activePage === "progress" && (
                     <>
                         <div className="hm-page-heading">
@@ -813,19 +994,28 @@ function App() {
                             <div className="hm-summary-card water">
                                 <span>💧</span>
                                 <p>Total water</p>
-                                <h2>{totals.water.toFixed(2)} <small>litres</small></h2>
+                                <h2>
+                                    {totals.water.toFixed(2)}
+                                    <small> litres</small>
+                                </h2>
                             </div>
 
                             <div className="hm-summary-card sleep">
                                 <span>😴</span>
                                 <p>Total sleep</p>
-                                <h2>{totals.sleep.toFixed(1)} <small>hours</small></h2>
+                                <h2>
+                                    {totals.sleep.toFixed(1)}
+                                    <small> hours</small>
+                                </h2>
                             </div>
 
                             <div className="hm-summary-card exercise">
                                 <span>🏃</span>
                                 <p>Total exercise</p>
-                                <h2>{Math.round(totals.exercise)} <small>minutes</small></h2>
+                                <h2>
+                                    {Math.round(totals.exercise)}
+                                    <small> minutes</small>
+                                </h2>
                             </div>
                         </section>
 
@@ -879,8 +1069,12 @@ function App() {
                     <>
                         <div className="hm-page-heading">
                             <div>
-                                <p className="hm-eyebrow">YOUR SAVED ACTIVITIES</p>
+                                <p className="hm-eyebrow">
+                                    YOUR SAVED ACTIVITIES
+                                </p>
+
                                 <h1>My Wellness</h1>
+
                                 <p>
                                     Review, edit or remove your wellness entries.
                                 </p>
@@ -898,13 +1092,22 @@ function App() {
                     </>
                 )}
 
+                {/* MEDICATION */}
+                {activePage === "medication" && (
+                    <Medication />
+                )}
+
                 {/* NOTIFICATIONS */}
                 {activePage === "notifications" && (
                     <>
                         <div className="hm-page-heading">
                             <div>
-                                <p className="hm-eyebrow">GENTLE DAILY GUIDANCE</p>
+                                <p className="hm-eyebrow">
+                                    GENTLE DAILY GUIDANCE
+                                </p>
+
                                 <h1>Notifications</h1>
+
                                 <p>
                                     Helpful reminders for maintaining a balanced routine.
                                 </p>
@@ -914,8 +1117,10 @@ function App() {
                         <section className="hm-panel hm-notices">
                             <article>
                                 <span>💧</span>
+
                                 <div>
                                     <h3>Stay hydrated</h3>
+
                                     <p>
                                         Drink water regularly throughout the day
                                         instead of waiting until you feel thirsty.
@@ -925,8 +1130,10 @@ function App() {
 
                             <article>
                                 <span>😴</span>
+
                                 <div>
                                     <h3>Prioritise sleep</h3>
+
                                     <p>
                                         Try to maintain a consistent bedtime
                                         and wake-up time.
@@ -936,8 +1143,10 @@ function App() {
 
                             <article>
                                 <span>🚶</span>
+
                                 <div>
                                     <h3>Take movement breaks</h3>
+
                                     <p>
                                         Stand up, stretch or walk briefly
                                         after long periods of sitting.
@@ -947,8 +1156,10 @@ function App() {
 
                             <article>
                                 <span>♡</span>
+
                                 <div>
                                     <h3>Update your wellness</h3>
+
                                     <p>
                                         Record your water, sleep and exercise
                                         activities to keep your progress history useful.
@@ -970,7 +1181,9 @@ function App() {
                         <div className="hm-page-heading">
                             <div>
                                 <p className="hm-eyebrow">ACCOUNT</p>
+
                                 <h1>My Profile</h1>
+
                                 <p>
                                     View your personal and wellness information.
                                 </p>
@@ -982,7 +1195,9 @@ function App() {
 
                             <div>
                                 <h2>{user?.name || "Loading profile..."}</h2>
+
                                 <p>{user?.email || "Email unavailable"}</p>
+
                                 <p>
                                     Your HealthMate account and wellness information.
                                 </p>
@@ -1005,14 +1220,18 @@ function App() {
 
                                 <p>
                                     <strong>
-                                        {user?.height ? `${user.height} cm` : "—"}
+                                        {user?.height
+                                            ? `${user.height} cm`
+                                            : "—"}
                                     </strong>
                                     <span>Height</span>
                                 </p>
 
                                 <p>
                                     <strong>
-                                        {user?.weight ? `${user.weight} kg` : "—"}
+                                        {user?.weight
+                                            ? `${user.weight} kg`
+                                            : "—"}
                                     </strong>
                                     <span>Current weight</span>
                                 </p>
@@ -1065,7 +1284,9 @@ function App() {
                                 </p>
 
                                 <p>
-                                    <strong>{Math.round(totals.exercise)} min</strong>
+                                    <strong>
+                                        {Math.round(totals.exercise)} min
+                                    </strong>
                                     <span>Exercise recorded</span>
                                 </p>
                             </div>
@@ -1086,3 +1307,4 @@ function App() {
 }
 
 export default App;
+
